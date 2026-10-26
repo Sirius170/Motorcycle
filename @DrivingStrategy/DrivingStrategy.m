@@ -396,8 +396,8 @@ classdef DrivingStrategy < driving.scenario.MotionStrategy...
                 
             end
         end
-        
-        
+
+
         function orientEgoActor(obj,direction,offset)
             if nargin == 1
                 [s,direction,offset]= obj.getLaneInformation();
@@ -516,9 +516,11 @@ classdef DrivingStrategy < driving.scenario.MotionStrategy...
         end
         
         function state = getNextNodeState(obj)
-            % 預設不允許通行，避免沒有號誌時誤判為綠燈
-            state = 0;
+            % 預設允許通行(沒有號誌控制器的節點，視為不受號誌限制)
+            state = 1;
             
+            % 只有下一個節點確實有號誌控制器時，
+            % 才依照號誌目前的狀態決定是否通行。
             if ~isempty(obj.NextNode)
                 if ~isempty(obj.NextNode(1).TrafficController)
                     state = obj.NextNode(1).getNodeState();

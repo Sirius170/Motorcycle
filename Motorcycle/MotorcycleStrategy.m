@@ -194,12 +194,6 @@ classdef MotorcycleStrategy < DrivingStrategy
                     % 進入第二階段左轉的 Node
                     goToNextNode(obj, tNext);
 
-                    if isempty(obj.Node)
-                        fprintf('【Stage 3 錯誤】切換後沒有下一個 Node\n');
-                        running = false;
-                        return
-                    end
-
                     % 重新取得車道方向與偏移
                     [station, direction, offset] = getLaneInformation(obj);
 
@@ -256,7 +250,9 @@ classdef MotorcycleStrategy < DrivingStrategy
 
                     obj.Station = station;
 
+                    %% Keep vehicle aligned with lane
                     if obj.StaticLaneKeeping
+                        % 對齊機車方向與車道
                         obj.orientEgoActor(direction, offset);
                     end
 

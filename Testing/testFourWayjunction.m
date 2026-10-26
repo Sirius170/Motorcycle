@@ -10,7 +10,7 @@ s.SampleTime = 0.05;
 %%
 InjectionRate = [700, 700, 700, 700]; % veh/hour
 TurnRatio = [20, 60, 30];
-cars = createVehiclesForFourWayJunction(s,net,InjectionRate, TurnRatio);
+[cars, motorcycles] = createVehiclesForFourWayJunction(s,net,InjectionRate, TurnRatio);
 %%
 nodesInJunction = net(9:end);
 cliques = [1,1,1,2,2,2,3,3,3,4,4,4];
@@ -31,6 +31,17 @@ end
 
 plot(s)
 sPlot = gca;
+
+% 在畫面上方建立模擬計時器
+timerLabel = annotation(gcf, 'textbox', [0.35 0.93 0.30 0.05], ...
+    'String', '模擬時間: 0.00 / 100.00 秒', 'HorizontalAlignment', 'center', ...
+    'VerticalAlignment', 'middle', 'FontSize', 12, 'FontWeight', 'bold', ...
+    'EdgeColor', 'none');
+
+% 建立獨立的機車視覺化圖層
+hold(sPlot, 'on');
+motorcycleDots = scatter(sPlot, nan, nan, 30, 'r', 'filled');
+
 xLim = sPlot.XLim + [-5,5];
 yLim = sPlot.YLim + [-5,5];
 set(sPlot,'XLim',xLim)
@@ -54,6 +65,22 @@ totalCarWaitingTime = 0;
     set(sPlot,'XLim',xLim)
     set(sPlot,'YLim',yLim)
     traffic.plotOpenPaths()
+    % 更新目前模擬時間
+    timerLabel.String = sprintf('模擬時間: %.2f / %.2f 秒', ...
+        s.SimulationTime, s.StopTime);
+
+    % 更新每台機車的圓點位置
+    if ~isempty(motorcycles)
+        motoX = arrayfun(@(m) m.Position(1), motorcycles);
+        motoY = arrayfun(@(m) m.Position(2), motorcycles);
+
+        % 只顯示目前可見的機車
+        visible = arrayfun(@(m) m.IsVisible, motorcycles);
+        set(motorcycleDots, ...
+            'XData', motoX(visible), ...
+            'YData', motoY(visible));
+    end
+
     %drawnow
     %Record video
     if recordVid

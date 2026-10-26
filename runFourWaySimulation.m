@@ -26,12 +26,6 @@ s.SampleTime = 0.05;
 
 net = createFourWayJunctionNetwork(s);
 
-% Debug：確認道路節點與 RoadID 的對應-----------------------------------
-for k = 1:numel(net)
-    fprintf('net(%d) -> RoadID=%d, Lane=%d\n', ...
-        k, net(k).RoadSegment.RoadID, net(k).Lane);
-end
-
 MotorcycleShare = 0.5;
 [cars, motorcycles, carEntryRoad, motorcycleEntryRoad] = ...
     createVehiclesForFourWayJunction(s, net, inflow, turnWeights, MotorcycleShare);
